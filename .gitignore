@@ -121,3 +121,6 @@ celerybeat-schedule
 
 # skaffold temporary build/deploy files
 build.out
+
+# VSCode config
+.vscode/
