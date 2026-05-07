@@ -94,6 +94,31 @@ class ProviderRoles(str, AutoValueEnum):
     host = auto()
 
 
+class NoDataTypes(str, AutoValueEnum):
+    nan = auto()
+    inf = auto()
+    minus_inf = "-inf"
+
+
+class DataTypes(str, AutoValueEnum):
+    int8 = auto()
+    int16 = auto()
+    int32 = auto()
+    int64 = auto()
+    uint8 = auto()
+    uint16 = auto()
+    uint32 = auto()
+    uint64 = auto()
+    float16 = auto()
+    float32 = auto()
+    float64 = auto()
+    cint16 = auto()
+    cint32 = auto()
+    cfloat32 = auto()
+    cfloat64 = auto()
+    other = auto()
+
+
 class StacBaseModel(BaseModel):
     def to_dict(
         self, by_alias: bool = True, exclude_unset: bool = True, **kwargs: Any
@@ -132,7 +157,7 @@ class StacBaseModel(BaseModel):
 
 class Provider(StacBaseModel):
     """
-    https://github.com/radiantearth/stac-spec/blob/v1.0.0/collection-spec/collection-spec.md#provider-object
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/collection-spec/collection-spec.md#provider-object
     """
 
     name: str = Field(..., min_length=1)
@@ -141,14 +166,38 @@ class Provider(StacBaseModel):
     url: Optional[str] = None
 
 
+class Band(StacBaseModel):
+    """
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/commons/common-metadata.md#band-object
+    """
+
+    name: Optional[str]
+    description: Optional[str]
+
+
+class Statistics(StacBaseModel):
+    """
+    https://github.com/radiantearth/stac-spec/blob/master/commons/common-metadata.md#statistics-object
+    """
+
+    minimum: Optional[float] = None
+    maximum: Optional[float] = None
+    mean: Optional[float] = None
+    stddev: Optional[float] = None
+    count: Optional[int] = None
+    valid_percent: Optional[float] = None
+
+
 class StacCommonMetadata(StacBaseModel):
     """
-    https://github.com/radiantearth/stac-spec/blob/v1.0.0/item-spec/common-metadata.md
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/commons/common-metadata.md
     """
 
     # Basic
     title: Optional[str] = None
     description: Optional[str] = None
+    keywords: Optional[List[str]] = None
+    roles: Optional[List[str]] = None
     # Date and Time
     datetime: Optional[UtcDatetime] = Field(...)
     created: Optional[UtcDatetime] = None
@@ -166,6 +215,13 @@ class StacCommonMetadata(StacBaseModel):
     constellation: Optional[str] = None
     mission: Optional[str] = None
     gsd: Optional[float] = Field(None, gt=0)
+    # Bands
+    bands: Optional[List[Band]] = None
+    # Data
+    nodata: Optional[float | str] = None
+    data_type: Optional[str] = None
+    statistics: Optional[Statistics] = None
+    unit: Optional[str] = None
 
     @model_validator(mode="after")
     def validate_datetime_or_start_end(self) -> Self:
@@ -294,5 +350,14 @@ def validate_bbox(v: Optional[BBox]) -> Optional[BBox]:
             raise ValueError(
                 f"Maximum latitude ({ymax}) must be greater than minimum latitude  ({ymin})"
             )
+
+    return v
+
+
+def validate_percentage(v: Optional[float]) -> Optional[float]:
+    """Validate percentage value value."""
+    if v is not None:
+        if not (0 <= v <= 100):
+            raise ValueError("Invalid percentage. {v} must be between 0 and 100")
 
     return v
