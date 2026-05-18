@@ -42,7 +42,7 @@ SearchDatetime: TypeAdapter = TypeAdapter(Optional[UtcDatetime])
 
 class MimeTypes(str, Enum):
     """
-    https://github.com/radiantearth/stac-spec/blob/v1.0.0/item-spec/item-spec.md#media-types
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/item-spec/item-spec.md#media-type-for-stac-item
     """
 
     # Raster
@@ -78,7 +78,7 @@ class MimeTypes(str, Enum):
 
 class AssetRoles(str, AutoValueEnum):
     """
-    https://github.com/radiantearth/stac-spec/blob/v1.0.0/extensions/asset/README.md
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/commons/assets.md#roles
     """
 
     thumbnail = auto()
@@ -177,7 +177,7 @@ class Band(StacBaseModel):
 
 class Statistics(StacBaseModel):
     """
-    https://github.com/radiantearth/stac-spec/blob/master/commons/common-metadata.md#statistics-object
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/commons/common-metadata.md#statistics-object
     """
 
     minimum: Optional[float] = None

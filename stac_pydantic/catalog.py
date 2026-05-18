@@ -9,7 +9,7 @@ from stac_pydantic.version import STAC_VERSION
 
 class _Catalog(StacBaseModel):
     """
-    https://github.com/radiantearth/stac-spec/blob/v1.0.0/catalog-spec/catalog-spec.md
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/catalog-spec/catalog-spec.md
     """
 
     id: str = Field(..., alias="id", min_length=1)

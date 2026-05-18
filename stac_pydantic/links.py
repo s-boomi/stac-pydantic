@@ -1,5 +1,5 @@
 from enum import auto
-from typing import Iterator, List, Optional, Union
+from typing import Any, Dict, Iterator, List, Optional, Union
 from urllib.parse import urljoin
 
 from pydantic import ConfigDict, Field, RootModel
@@ -10,13 +10,16 @@ from stac_pydantic.utils import AutoValueEnum
 
 class Link(StacBaseModel):
     """
-    https://github.com/radiantearth/stac-spec/blob/v1.0.0/collection-spec/collection-spec.md#link-object
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/commons/links.md#link-object
     """
 
     href: str = Field(..., alias="href", min_length=1)
     rel: str = Field(..., alias="rel", min_length=1)
     type: Optional[Union[MimeTypes, str]] = None
     title: Optional[str] = None
+    method: str = "GET"
+    headers: Optional[Dict[str, Union[str, List[str]]]] = None
+    body: Optional[Any] = None
 
     model_config = ConfigDict(use_enum_values=True, extra="allow")
 
@@ -49,8 +52,8 @@ class Links(RootModel[List[Link]]):
 
 class Relations(str, AutoValueEnum):
     """
-    https://github.com/radiantearth/stac-spec/blob/v1.0.0/collection-spec/collection-spec.md#relation-types
-    https://github.com/radiantearth/stac-spec/blob/v1.0.0/best-practices.md#using-relation-types
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/commons/links.md#relation-types
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/best-practices.md#using-relation-types
     """
 
     self = auto()

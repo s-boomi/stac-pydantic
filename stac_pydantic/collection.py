@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union
 
-from pydantic import AfterValidator, Field, conlist
+from pydantic import AfterValidator, ConfigDict, Field, conlist
 from typing_extensions import Annotated
 
 from stac_pydantic.catalog import _Catalog
@@ -147,7 +147,7 @@ def validate_time_interval(v: TInterval) -> TInterval:  # noqa: C901
 
 class SpatialExtent(StacBaseModel):
     """
-    https://github.com/radiantearth/stac-spec/blob/v1.0.0/collection-spec/collection-spec.md#spatial-extent-object
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/collection-spec/collection-spec.md#spatial-extent-object
     """
 
     bbox: Annotated[List[BBox], AfterValidator(validate_bbox_interval)]
@@ -155,7 +155,7 @@ class SpatialExtent(StacBaseModel):
 
 class TimeInterval(StacBaseModel):
     """
-    https://github.com/radiantearth/stac-spec/blob/v1.0.0/collection-spec/collection-spec.md#temporal-extent-object
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/collection-spec/collection-spec.md#temporal-extent-object
     """
 
     interval: Annotated[TInterval, AfterValidator(validate_time_interval)]
@@ -163,7 +163,7 @@ class TimeInterval(StacBaseModel):
 
 class Extent(StacBaseModel):
     """
-    https://github.com/radiantearth/stac-spec/blob/v1.0.0/collection-spec/collection-spec.md#extent-object
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/collection-spec/collection-spec.md#extent-object
     """
 
     spatial: SpatialExtent
@@ -172,19 +172,35 @@ class Extent(StacBaseModel):
 
 class Range(StacBaseModel):
     """
-    https://github.com/radiantearth/stac-spec/blob/v1.0.0/collection-spec/collection-spec.md#stats-object
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/collection-spec/collection-spec.md#range-object
     """
 
     minimum: Union[NumType, str]
     maximum: Union[NumType, str]
 
 
+class ItemAsset(StacBaseModel):
+    """
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/collection-spec/collection-spec.md#item-asset-definition-object
+    """
+
+    type: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    roles: Optional[List[str]] = None
+
+    model_config = ConfigDict(
+        populate_by_name=True, use_enum_values=True, extra="allow"
+    )
+
+
 class Collection(_Catalog):
     """
-    https://github.com/radiantearth/stac-spec/blob/v1.0.0/collection-spec/collection-spec.md
+    https://github.com/radiantearth/stac-spec/blob/v1.1.0/collection-spec/collection-spec.md
     """
 
     assets: Optional[Dict[str, Asset]] = None
+    item_assets: Optional[Dict[str, ItemAsset]] = None
     license: str = Field(..., alias="license", min_length=1)
     extent: Extent
     title: Optional[str] = None
