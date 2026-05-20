@@ -174,6 +174,9 @@ class Band(StacBaseModel):
     name: Optional[str]
     description: Optional[str]
 
+    # For extensions related to bands
+    model_config = ConfigDict(use_enum_values=True, extra="allow")
+
 
 class Statistics(StacBaseModel):
     """
